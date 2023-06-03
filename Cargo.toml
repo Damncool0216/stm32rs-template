@@ -1,0 +1,47 @@
+[package]
+authors = ["{{authors}}"]
+edition = "2021"
+readme = "README.md"
+name = "{{project-name}}"
+version = "0.1.0"
+
+[dependencies]
+embedded-hal = "0.2.6"
+cortex-m = "0.7.3"
+cortex-m-rt = "0.7.1"
+# cortex-m-semihosting = "0.3.3"
+panic-halt = "0.2.0"
+
+[dependencies.stm32f1xx-hal]
+version = "0.10.0"
+features = ["rt", "stm32f103", "high"]
+
+[dependencies.rtt-target]
+version = "0.3.1"
+optional = true
+features = ["cortex-m"]
+
+[[bin]]
+name = "{{project-name}}"
+test = false
+bench = false
+
+[profile.release]
+codegen-units = 1 # better optimizations
+debug = true # symbols are nice and they don't increase the size on Flash
+lto = true # better optimizations
+opt-level = "z"
+# panic = "abort"
+
+# don't optimize the `cortex-m-rt` crate
+# [profile.dev.package.cortex-m-rt] # +
+# opt-level = 0 # +
+
+# but do optimize all the other dependencies
+[profile.dev.package."*"]
+codegen-units = 1 # better optimizations
+opt-level = "z"
+
+[features]
+# default = ["rtt"]
+rtt = ["dep:rtt-target"]
